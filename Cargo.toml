@@ -1,0 +1,16 @@
+[package]
+name = "hashcsrt"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+# Define que o output será uma biblioteca dinâmica de C (DLL)
+crate-type = ["cdylib"]
+
+[dependencies]
+# Para interoperabilidade básica com tipos C (c_char)
+libc = "0.2"
+# Para lidar com encoding Windows-1252 do VB6
+encoding_rs = "0.8"
+# Para tratamento básico e ergonômico de erros
+anyhow = "1.0"
