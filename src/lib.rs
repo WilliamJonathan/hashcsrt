@@ -18,7 +18,7 @@ use base64::{Engine as _, engine::general_purpose};
 /// * O caller é responsável por liberar a memória usando `free_string`
 /// * A string de entrada deve estar em UTF-8 ou será convertida se possível
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn calcular_sha1_hash(input: *const c_char) -> *mut c_char {
+pub extern "system" fn calcular_sha1_hash(input: *const c_char) -> *mut c_char {
     // Verifica se o ponteiro é válido
     if input.is_null() {
         return std::ptr::null_mut();
@@ -56,7 +56,7 @@ pub unsafe extern "C" fn calcular_sha1_hash(input: *const c_char) -> *mut c_char
 /// * Deve ser chamada exatamente uma vez para cada string retornada
 /// * Não chame com strings que não foram retornadas por calcular_sha1_hash
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn free_string(s: *mut c_char) {
+pub extern "system" fn free_string(s: *mut c_char) {
     if !s.is_null() {
         unsafe {
             // Reconstrói o CString para que seja dropped e a memória liberada
@@ -79,7 +79,7 @@ mod tests {
     fn test_calcular_sha1_hash() {
         // Teste com o exemplo do código C#
         let input = CString::new("G8063VRTNDMO886SFNK5LDUDEI24XJ22YIPO41180678393592000146558900000006041028190697").unwrap();
-        let result_ptr = unsafe { calcular_sha1_hash(input.as_ptr()) };
+        let result_ptr = { calcular_sha1_hash(input.as_ptr()) };
         
         assert!(!result_ptr.is_null());
         
@@ -91,12 +91,12 @@ mod tests {
         println!("SHA-1 Hash (Base64): {}", result);
         
         // Libera a memória
-        unsafe { free_string(result_ptr); }
+        free_string(result_ptr);
     }
 
     #[test]
     fn test_null_input() {
-        let result = unsafe { calcular_sha1_hash(std::ptr::null()) };
+        let result = { calcular_sha1_hash(std::ptr::null()) };
         assert!(result.is_null());
     }
 }
