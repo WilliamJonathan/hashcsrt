@@ -18,7 +18,7 @@ use base64::{Engine as _, engine::general_purpose};
 /// * O caller é responsável por liberar a memória usando `free_string`
 /// * A string de entrada deve estar em UTF-8 ou será convertida se possível
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn calculate_sha1_hash(input: *const c_char) -> *mut c_char {
+pub unsafe extern "C" fn calcular_sha1_hash(input: *const c_char) -> *mut c_char {
     // Verifica se o ponteiro é válido
     if input.is_null() {
         return std::ptr::null_mut();
@@ -47,14 +47,14 @@ pub unsafe extern "C" fn calculate_sha1_hash(input: *const c_char) -> *mut c_cha
     }
 }
 
-/// Libera a memória alocada para uma string retornada por calculate_sha1_hash
+/// Libera a memória alocada para uma string retornada por calcular_sha1_hash
 /// 
 /// # Parâmetros
 /// * `s` - Ponteiro para a string C a ser liberada
 /// 
 /// # Importante
 /// * Deve ser chamada exatamente uma vez para cada string retornada
-/// * Não chame com strings que não foram retornadas por calculate_sha1_hash
+/// * Não chame com strings que não foram retornadas por calcular_sha1_hash
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn free_string(s: *mut c_char) {
     if !s.is_null() {
@@ -65,16 +65,21 @@ pub unsafe extern "C" fn free_string(s: *mut c_char) {
     }
 }
 
+
+/// Testes unitários para a biblioteca
+/// * Testa a função calcular_sha1_hash com entradas conhecidas
+/// * Verifica se a memória é liberada corretamente
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::ffi::CString;
 
     #[test]
-    fn test_calculate_sha1_hash() {
+    fn test_calcular_sha1_hash() {
         // Teste com o exemplo do código C#
         let input = CString::new("G8063VRTNDMO886SFNK5LDUDEI24XJ22YIPO41180678393592000146558900000006041028190697").unwrap();
-        let result_ptr = unsafe { calculate_sha1_hash(input.as_ptr()) };
+        let result_ptr = unsafe { calcular_sha1_hash(input.as_ptr()) };
         
         assert!(!result_ptr.is_null());
         
@@ -91,7 +96,7 @@ mod tests {
 
     #[test]
     fn test_null_input() {
-        let result = unsafe { calculate_sha1_hash(std::ptr::null()) };
+        let result = unsafe { calcular_sha1_hash(std::ptr::null()) };
         assert!(result.is_null());
     }
 }
