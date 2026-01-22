@@ -57,7 +57,3 @@ MsgBox "Hash SHA-1 (Base64): " & hashCSRT
 - **Entrada**: Ponteiro retornado por `calculate_sha1_hash`
 - **Saída**: Nenhuma
 - **Nota**: Libera a memória alocada pela DLL
-
-## Arquitetura
-
-A DLL aceita parâmetros em tempo de execução (não fixos), conforme solicitado. A string de entrada é passada como parâmetro e o hash é calculado dinamicamente.
