@@ -1,7 +1,7 @@
 ' Exemplo de uso da DLL hashcsrt.dll em VB6
 ' 
 ' Declarações das funções da DLL
-Private Declare Function calculate_sha1_hash Lib "hashcsrt.dll" (ByVal input As String) As Long
+Private Declare Function calcular_sha1_hash Lib "hashcsrt.dll" (ByVal input As String) As Long
 Private Declare Sub free_string Lib "hashcsrt.dll" (ByVal ptr As Long)
 
 ' Função auxiliar para converter ponteiro C em String VB6
@@ -44,7 +44,7 @@ Public Function CalculateSHA1Hash(ByVal input As String) As String
     Dim hashResult As String
     
     ' Chama a função da DLL
-    resultPtr = calculate_sha1_hash(input & vbNullChar)
+    resultPtr = calcular_sha1_hash(input & vbNullChar)
     
     If resultPtr <> 0 Then
         ' Converte o ponteiro para string VB6
