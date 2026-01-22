@@ -14,3 +14,7 @@ libc = "0.2"
 encoding_rs = "0.8"
 # Para tratamento básico e ergonômico de erros
 anyhow = "1.0"
+# Para calcular SHA-1 hash
+sha1 = "0.10"
+# Para encoding Base64
+base64 = "0.21"
