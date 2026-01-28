@@ -78,7 +78,7 @@ mod tests {
     #[test]
     fn test_calcular_sha1_hash() {
         // Teste com o exemplo do código C#
-        let input = CString::new("G8063VRTNDMO886SFNK5LDUDEI24XJ22YIPO41180678393592000146558900000006041028190697").unwrap();
+        let input = CString::new("T8L5TVKWDNGCESXPPIDF3I8Q8C397VBY2EFG41260138178375000119550010000480271779314050").unwrap();
         let result_ptr = { calcular_sha1_hash(input.as_ptr()) };
         
         assert!(!result_ptr.is_null());
