@@ -1,71 +1,64 @@
-' Exemplo de uso da DLL hashcsrt.dll em VB6
-' 
-' Declarações das funções da DLL
+' ========================================
+' Exemplo SIMPLES de uso da DLL hashcsrt.dll em VB6
+' ========================================
+
+' 1. DECLARAÇÕES DA DLL (coloque no topo do módulo ou form)
 Private Declare Function calcular_sha1_hash Lib "hashcsrt.dll" (ByVal input As String) As Long
 Private Declare Sub free_string Lib "hashcsrt.dll" (ByVal ptr As Long)
+Private Declare Function lstrcpyA Lib "kernel32" (ByVal dest As String, ByVal src As Long) As Long
+Private Declare Function lstrlenA Lib "kernel32" (ByVal ptr As Long) As Long
 
-' Função auxiliar para converter ponteiro C em String VB6
-Private Function PtrToString(ByVal ptr As Long) As String
-    Dim length As Long
-    Dim i As Long
-    Dim char As Byte
-    Dim result As String
-    
+' 2. FUNÇÃO AUXILIAR - Converte ponteiro para String VB6
+Private Function GetStringFromPointer(ByVal ptr As Long) As String
     If ptr = 0 Then
-        PtrToString = ""
+        GetStringFromPointer = ""
         Exit Function
     End If
     
-    ' Encontra o comprimento da string (até o null terminator)
-    length = 0
-    Do
-        CopyMemory char, ByVal ptr + length, 1
-        If char = 0 Then Exit Do
-        length = length + 1
-    Loop
+    Dim tamanho As Long
+    tamanho = lstrlenA(ptr)
     
-    ' Copia a string
-    If length > 0 Then
-        result = Space$(length)
-        CopyMemory ByVal StrPtr(result), ByVal ptr, length
-        PtrToString = result
+    If tamanho > 0 Then
+        GetStringFromPointer = Space$(tamanho)
+        lstrcpyA GetStringFromPointer, ptr
     Else
-        PtrToString = ""
+        GetStringFromPointer = ""
     End If
 End Function
 
-' Declaração da API do Windows para copiar memória
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" _
-    (Destination As Any, Source As Any, ByVal length As Long)
-
-' Função principal que calcula o SHA-1 Hash
-Public Function CalculateSHA1Hash(ByVal input As String) As String
-    Dim resultPtr As Long
-    Dim hashResult As String
+' 3. FUNÇÃO PRINCIPAL - Calcula SHA-1 e retorna Base64
+Public Function SHA1_Base64(ByVal texto As String) As String
+    Dim ptr As Long
+    Dim resultado As String
     
-    ' Chama a função da DLL
-    resultPtr = calcular_sha1_hash(input & vbNullChar)
+    ' Chama a DLL
+    ptr = calcular_sha1_hash(texto & vbNullChar)
     
-    If resultPtr <> 0 Then
-        ' Converte o ponteiro para string VB6
-        hashResult = PtrToString(resultPtr)
+    If ptr <> 0 Then
+        ' Obtém o resultado
+        resultado = GetStringFromPointer(ptr)
         
-        ' Libera a memória alocada pela DLL
-        free_string resultPtr
+        ' IMPORTANTE: Libera a memória
+        free_string ptr
         
-        CalculateSHA1Hash = hashResult
+        SHA1_Base64 = resultado
     Else
-        CalculateSHA1Hash = ""
+        SHA1_Base64 = ""
     End If
 End Function
 
-' Exemplo de uso
-Sub ExemploUso()
-    Dim CSRT As String
-    Dim hashCSRT As String
+' 4. EXEMPLO DE USO
+Sub TestarHash()
+    Dim entrada As String
+    Dim hash As String
     
-    CSRT = "G8063VRTNDMO886SFNK5LDUDEI24XJ22YIPO"
-    hashCSRT = CalculateSHA1Hash("T8L5TVKWDNGCESXPPIDF3I8Q8C397VBY2EFG41260138178375000119550010000480271779314050")
+    ' Exemplo 1: Texto simples
+    entrada = "Hello World"
+    hash = SHA1_Base64(entrada)
+    MsgBox "Texto: " & entrada & vbCrLf & "Hash: " & hash
     
-    MsgBox "Hash SHA-1 (Base64): " & hashCSRT
+    ' Exemplo 2: String do sistema
+    entrada = "T8L5TVKWDNGCESXPPIDF3I8Q8C397VBY2EFG41260138178375000119550010000480271779314050"
+    hash = SHA1_Base64(entrada)
+    MsgBox "Hash SHA-1 (Base64): " & hash
 End Sub
